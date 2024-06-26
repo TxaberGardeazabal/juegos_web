@@ -1,0 +1,10 @@
+este es conecta 4 pasado a html5 por txaber
+para abrir el programa haga clic sobre el fichero conecta4 con la extension .html 
+y abrala usando su navegador
+
+reglas de juego: la frase de abajo indica a quien le toca, pulsa en los botones con flechas
+encima del tablero para dejar caer una ficha en esa posicion, gana el color que logre
+colocar 4 fichas de su color en linea horizontal, vertical o diagonal.
+una vez terminado refresque la pagina para volver a empezar
+
+para mantener el aspecto bonito del juego por favor no mueva ni cambie el nombre al contenido de esta carpeta

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>conecta 4</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body >
+	<center>
+		<h1>conecta 4 version HTML5</h1>
+		<br>
+		<div>
+			<!-- voy a usar una funcion unica para todos -->
+			<button onclick="nuevaFicha(0)">v</button>
+			<button onclick="nuevaFicha(1)">v</button>
+			<button onclick="nuevaFicha(2)">v</button>
+			<button onclick="nuevaFicha(3)">v</button>
+			<button onclick="nuevaFicha(4)">v</button>
+			<button onclick="nuevaFicha(5)">v</button>
+			<button onclick="nuevaFicha(6)">v</button>
+		</div>
+		<div id="canvas"></div>
+		<br>
+		<span>
+			le toca a: <b id="turno"></b>
+		</span>
+
+	</center>
+	<script type="text/javascript">
+		
+		var long = 7;
+		var alt = 6;
+
+		var aMax = alt -1;
+		var lMax = long -1;
+		var min = 0;
+
+		var turnoActual = 'rojo';
+		var seAcabo = false;
+
+		function load() {
+			//crear una tabla 7x6
+			var html = '<table>';
+			for (var row = 0;row < alt;row++) {
+				html += '<tr>';
+				for (var col = 0;col < long;col++) { 
+					var id = row+""+col;
+					html += '<td id="'+id+'" class="game_block"></td>';
+				}
+				html += '</tr>';
+			}
+			html += '</table>';
+			document.getElementById("canvas").innerHTML = html;
+			
+			document.getElementById("turno").innerHTML = "rojo";
+			document.getElementById("turno").style.color = "#ff0000"
+			return false;
+		}
+
+		function nuevaFicha(col) {
+			if (!seAcabo) {
+				var id = 0+""+col;
+				//alert(id); 
+				if (document.getElementById(id).innerHTML == "") {
+					if (turnoActual == 'rojo') {
+						document.getElementById(id).innerHTML = "r";
+						document.getElementById(id).style.color = "#ff0000";
+						document.getElementById(id).style.backgroundColor = "#ff0000";
+					}
+					else {
+						document.getElementById(id).innerHTML = "a";
+						document.getElementById(id).style.color = "#ffff00";
+						document.getElementById(id).style.backgroundColor = "#ffff00";
+					}
+					moverAbajo(id);
+					comprobar();
+					if (!seAcabo) {
+						cambioTurno();
+					}
+				}
+			}
+		}
+
+		function cambioTurno() {
+			if (turnoActual == 'rojo') {
+				turnoActual = 'amarillo';
+				document.getElementById("turno").innerHTML = "amarillo";
+				document.getElementById("turno").style.color = "#ffff00";
+			}
+			else {
+				turnoActual = 'rojo';
+				document.getElementById("turno").innerHTML = "rojo";
+				document.getElementById("turno").style.color = "#ff0000";
+			}
+		}
+
+		function moverAbajo(id) {
+			//no compruebes la ultima fila
+			if (!id.startsWith(aMax)) {
+				var arr = id.split("");
+				var x = parseInt(arr[0]);
+				var y = parseInt(arr[1]);
+
+				for (var k=(x+1);k<=aMax;k++) {
+					var otroId = k+""+y;
+					if (document.getElementById(otroId).innerHTML == "") {
+						var val = document.getElementById((k-1)+""+y).innerHTML;
+						
+						document.getElementById(otroId).innerHTML = val;
+						if (val == 'r') {
+							document.getElementById(otroId).innerHTML = 'r';
+							document.getElementById(otroId).style.color = "#ff0000";
+							document.getElementById(otroId).style.backgroundColor = "#ff0000";
+						}
+						else {
+							document.getElementById(otroId).innerHTML = 'a';
+							document.getElementById(otroId).style.color = "#ffff00";
+							document.getElementById(otroId).style.backgroundColor = "#ffff00";
+						}
+						
+						document.getElementById((k-1)+""+y).innerHTML = "";
+						document.getElementById((k-1)+""+y).style.backgroundColor = "#ffffff";
+					}
+				}
+			}
+		}
+
+		function comprobar() {
+			for (var y = min;y <= aMax;y++) {
+				for (var x = min;x <= lMax;x++) {
+					var id = y+""+x;
+					
+					//alert(id);
+					//comprueba solo si hay una ficha en la celda
+					if (document.getElementById(id).innerHTML != "") {
+						
+						if (y < 3) {
+							switch(x) {
+								case 0:
+								case 1:
+								case 2: 
+									//alert(id);
+									compHorizontal(id);
+									compVertical(id);
+									compDiagonal(id);
+									break;
+								case 3: 
+									//alert(id);
+									compHorizontal(id);
+									compVertical(id);
+									compDiagonal(id);
+									compDiagonalInversa(id);
+									break;
+								case 4:
+								case 5:
+								case 6: 
+									//alert(id);
+									compVertical(id);
+									compDiagonalInversa(id); 
+									break;
+							}
+						}
+						else {
+							if (x < 4) { 
+								//alert(id);
+								compHorizontal(id); 
+							}
+							//alert(id);
+						}
+					}
+				}
+			}
+		}
+		
+		function compHorizontal(id1) {
+			var arr = id1.split("");
+			var x = parseInt(arr[1]);
+			var y = parseInt(arr[0]);
+
+			var id2 = y+""+(x+1);
+			var id3 = y+""+(x+2);
+			var id4 = y+""+(x+3);
+
+			var ficha1 = document.getElementById(id1).innerHTML;
+			var ficha2 = document.getElementById(id2).innerHTML;
+			var ficha3 = document.getElementById(id3).innerHTML;
+			var ficha4 = document.getElementById(id4).innerHTML;
+			if (ficha1 == ficha2 && ficha1 == ficha3 && ficha1 == ficha4) {
+
+				seAcabo = true;
+				alert("el color "+turnoActual+" gana");
+			}
+		}
+
+		function compVertical(id1) {
+			var arr = id1.split("");
+			var x = parseInt(arr[1]);
+			var y = parseInt(arr[0]);
+
+			var id2 = (y+1)+""+x;
+			var id3 = (y+2)+""+x;
+			var id4 = (y+3)+""+x;
+
+			var ficha1 = document.getElementById(id1).innerHTML;
+			var ficha2 = document.getElementById(id2).innerHTML;
+			var ficha3 = document.getElementById(id3).innerHTML;
+			var ficha4 = document.getElementById(id4).innerHTML;
+			if (ficha1 == ficha2 && ficha1 == ficha3 && ficha1 == ficha4) {
+
+				seAcabo = true;
+				alert("el color "+turnoActual+" gana");
+			}
+		}
+
+		function compDiagonal(id1) {
+			var arr = id1.split("");
+			var x = parseInt(arr[1]);
+			var y = parseInt(arr[0]);
+
+			var id2 = (y+1)+""+(x+1);
+			var id3 = (y+2)+""+(x+2);
+			var id4 = (y+3)+""+(x+3);
+
+			var ficha1 = document.getElementById(id1).innerHTML;
+			var ficha2 = document.getElementById(id2).innerHTML;
+			var ficha3 = document.getElementById(id3).innerHTML;
+			var ficha4 = document.getElementById(id4).innerHTML;
+			if (ficha1 == ficha2 && ficha1 == ficha3 && ficha1 == ficha4) {
+
+				seAcabo = true;
+				alert("el color "+turnoActual+" gana");
+			}
+		}
+
+		function compDiagonalInversa(id1) {
+			var arr = id1.split("");
+			var x = parseInt(arr[1]);
+			var y = parseInt(arr[0]);
+
+			var id2 = (y+1)+""+(x-1);
+			var id3 = (y+2)+""+(x-2);
+			var id4 = (y+3)+""+(x-3);
+
+			var ficha1 = document.getElementById(id1).innerHTML;
+			var ficha2 = document.getElementById(id2).innerHTML;
+			var ficha3 = document.getElementById(id3).innerHTML;
+			var ficha4 = document.getElementById(id4).innerHTML;
+			if (ficha1 == ficha2 && ficha1 == ficha3 && ficha1 == ficha4) {
+
+				seAcabo = true;
+				alert("el color "+turnoActual+" gana");
+			}
+		}
+		// llamada a la funcion load
+		load();
+	</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+div button
+{
+	width: 54px;
+	margin-bottom: 2px;
+	color: white;
+	background-color: #2656c7;
+	border-color: #204bb0;
+	border-style: solid;
+
+}
+
+div button:hover
+{
+	cursor: pointer;
+}
+
+table { border-spacing: 0px; }
+
+.game_block 
+{
+	height: 55px;
+	width: 55px;
+	background-image: url(tablero.png);
+	background-size: 100% 100%;
+	text-align: center;
+}
