@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title> Jamoiak </title>
+ </head>
+ <body style="background-image: url(imagenes/txantxiku.png);">
+	<center>
+	<a style="cursor: pointer; background-color: white; text-align: center; font-size: 21px; font-family: impact;" onclick="return load();">repetir curso</a>
+	<div id="canvas" style="background-image: url(imagenes/white.png); width: 420px; font-size: 45px; text-decoration:white;"></div>
+	<br>
+	<h2 style="background-color: #327e27; display: inline; width: 100px;">Notas : <div style="display:inline;" id="score"></div></h2>
+	<br>
+	<p style="background-color: white; width: 420px;"><b style="background-color: white;">COMO JUGAR: </b>despues de haber estudiado hasta aprobar todas las asignaturas la cuarentena por el coronavirus ha tirado todas las practicas, con el tiempo que has pasado en casa estas seguro que no vas a poder lograr aprobar asi que debes conseguir un buen jamoiak para sobornar al Mikel y que este te apruebe las practicas. Usa los botones con flechas para mover los elementos, ve combinando los elementos con el mismo numero para obtener numeros mayores, debes conseguir el jamoiak (2048) para aprobar y no tener que repetir.</p>
+	</center>
+	<script type="text/javascript">
+    <!--
+	//Size of the grid
+	var size = 4;
+	var min = 0;
+	var max = size - 1;
+	
+	var isMoved = false;
+	var score = 0;
+	
+	var excludeIds = [];
+
+	function load() {
+		//alert("load");
+		//Load the table
+		var html = '<table border="1">';
+		for(var row=0;row<size;row++) {
+			html += '<tr>';
+			for(var col=0;col<size;col++) {
+				var id = row+""+col;
+				html += '<td align="center" valign="center" height="100" width="100" id="'+id+'"></td>';
+			}
+			html += '</tr>';
+		}
+		html += '</table>';
+		//alert(html);
+		document.getElementById("canvas").innerHTML = html;
+
+		var id1 = getId();
+		var id2 = "";
+		while(true) {
+			id2 = getId();
+			if(id1 != id2)
+			break;
+		}
+		//Set initial 2 values
+		document.getElementById(id1).innerHTML = "2";
+		document.getElementById(id2).innerHTML = "2";
+		
+		document.getElementById(id1).style.backgroundImage = getImg(2);
+		document.getElementById(id2).style.backgroundImage = getImg(2);
+
+		document.getElementById(id1).style.backgroundSize = "100% 100%" ;
+		document.getElementById(id2).style.backgroundSize = "100% 100%" ;
+		
+		
+		score = 0;
+		document.getElementById("score").innerHTML = score;
+
+		return false;
+	}
+	function getRandom()
+	{
+		return Math.floor(Math.random()*(max-min+1)+min);
+	}
+	function getId()
+	{
+		var i = getRandom();
+		var j = getRandom();
+		return i+""+j;
+	}
+	function up() {
+		isMoved = false;
+		excludeIds = [];
+		for(var j=min;j<=max;j++) {
+			for(var i=min;i<=max;i++) {
+				var id = i+""+j;
+				if(document.getElementById(id).innerHTML != "") {
+					moveUp(id);
+				}
+			}
+		}
+		if(isMoved == true) {
+			update();
+		}
+		return false;
+	}
+	function moveUp(id) {		
+		if(!id.startsWith(min)) {
+			var arr = id.split("");
+			var i = parseInt(arr[0]);
+			var j = parseInt(arr[1]);
+			for(var k=(i-1);k>=min;k--) {
+				var nId = k+""+j;
+				if(document.getElementById(nId).innerHTML != "") {
+					var val = parseInt(document.getElementById((k+1)+""+j).innerHTML);
+					var nVal = parseInt(document.getElementById(nId).innerHTML);
+					if(val == nVal) {
+						if(excludeIds.indexOf(nId) == -1){
+							excludeIds.push(nId);
+							document.getElementById(nId).innerHTML = (val+nVal);
+							document.getElementById(nId).style.backgroundImage = getImg((val+nVal));
+							document.getElementById(nId).style.backgroundSize = "100% 100%";
+							document.getElementById((k+1)+""+j).innerHTML = "";
+							document.getElementById((k+1)+""+j).style.backgroundImage = "url(imagenes/white.png)";
+							document.getElementById((k+1)+""+j).style.backgroundSize = "100% 100%";
+							isMoved = true;
+							score += (val+nVal);
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(nId).innerHTML = document.getElementById((k+1)+""+j).innerHTML;
+					document.getElementById(nId).style.backgroundImage = document.getElementById((k+1)+""+j).style.backgroundImage;
+					document.getElementById(nId).style.backgroundSize = "100% 100%";
+					document.getElementById((k+1)+""+j).innerHTML = "";
+					document.getElementById((k+1)+""+j).style.backgroundImage = "url(imagenes/white.png)";
+					document.getElementById((k+1)+""+j).style.backgroundSize = "100% 100%";
+					isMoved = true;
+				}
+			}
+		}
+		return false;
+	}
+	function left() {
+		isMoved = false;
+		excludeIds = [];
+		for(var i=min;i<=max;i++) {
+			for(var j=min;j<=max;j++) {
+				var id = i+""+j;
+				if(document.getElementById(id).innerHTML != "") {
+					moveLeft(id);
+				}
+			}
+		}
+		if(isMoved == true) {
+			update();
+		}
+		return false;
+	}
+	function moveLeft(id) {
+		if(!id.endsWith(min)) {
+			var arr = id.split("");
+			var i = parseInt(arr[0]);
+			var j = parseInt(arr[1]);
+			for(var k=(j-1);k>=min;k--) {
+				var nId = i+""+k;
+				if(document.getElementById(nId).innerHTML != "") {
+					var val = parseInt(document.getElementById(i+""+(k+1)).innerHTML);
+					var nVal = parseInt(document.getElementById(nId).innerHTML);
+					if(val == nVal) {
+						if(excludeIds.indexOf(nId) == -1){
+							excludeIds.push(nId);
+							document.getElementById(nId).innerHTML = (val+nVal);
+							document.getElementById(nId).style.backgroundImage = getImg((val+nVal));
+							document.getElementById(nId).style.backgroundSize = "100% 100%";
+							document.getElementById(i+""+(k+1)).innerHTML = "";
+							document.getElementById(i+""+(k+1)).style.backgroundImage = "url(imagenes/white.png)";
+							document.getElementById(i+""+(k+1)).style.backgroundSize = "100% 100%";
+							isMoved = true;
+							score += (val+nVal);
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(nId).innerHTML = document.getElementById(i+""+(k+1)).innerHTML;
+					document.getElementById(nId).style.backgroundImage = document.getElementById(i+""+(k+1)).style.backgroundImage;
+					document.getElementById(nId).style.backgroundSize = "100% 100%";
+					document.getElementById(i+""+(k+1)).innerHTML = "";
+					document.getElementById(i+""+(k+1)).style.backgroundImage = "url(imagenes/white.png)";
+					document.getElementById(i+""+(k+1)).style.backgroundSize = "100% 100%";
+					isMoved = true;
+				}
+			}
+		}
+		return false;
+	}
+	function down() {
+		isMoved = false;
+		excludeIds = [];
+		for(var i=min;i<=max;i++) {
+			for(var j=max;j>=min;j--) {
+				var id = j+""+i;
+				if(document.getElementById(id).innerHTML != "") {
+					moveDown(id);
+				}
+			}
+		}
+		if(isMoved == true) {
+			update();
+		}
+		return false;
+	}
+	function moveDown(id) {
+		if(!id.startsWith(max)) {
+			var arr = id.split("");
+			var i = parseInt(arr[0]);
+			var j = parseInt(arr[1]);
+			for(var k=(i+1);k<=max;k++) {
+				var nId = k+""+j;
+				if(document.getElementById(nId).innerHTML != "") {
+					var val = parseInt(document.getElementById((k-1)+""+j).innerHTML);
+					var nVal = parseInt(document.getElementById(nId).innerHTML);
+					if(val == nVal) {
+						if(excludeIds.indexOf(nId) == -1){
+							excludeIds.push(nId);
+							document.getElementById(nId).innerHTML = (val+nVal);
+							document.getElementById(nId).style.backgroundImage = getImg((val+nVal));
+							document.getElementById(nId).style.backgroundSize = "100% 100%";
+							document.getElementById((k-1)+""+j).innerHTML = "";
+							document.getElementById((k-1)+""+j).style.backgroundImage = "url(imagenes/white.png)";
+							document.getElementById((k-1)+""+j).style.backgroundSize = "100% 100%";
+							isMoved = true;
+							score += (val+nVal);
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(nId).innerHTML = document.getElementById((k-1)+""+j).innerHTML;
+					document.getElementById(nId).style.backgroundImage = document.getElementById((k-1)+""+j).style.backgroundImage;
+					document.getElementById(nId).style.backgroundSize = "100% 100%";
+					document.getElementById((k-1)+""+j).innerHTML = "";
+					document.getElementById((k-1)+""+j).style.backgroundImage = "url(imagenes/white.png)";
+					document.getElementById((k-1)+""+j).style.backgroundSize = "100% 100%";
+					isMoved = true;
+				}
+			}
+		}
+		return false;
+	}
+	function right() {
+		isMoved = false;
+		excludeIds = [];
+		for(var i=min;i<=max;i++) {
+			for(var j=max;j>=min;j--) {
+				var id = i+""+j;
+				if(document.getElementById(id).innerHTML != "") {
+					moveRight(id);
+				}
+			}
+		}
+		if(isMoved == true) {
+			update();
+		}
+		return false;
+	}
+	function moveRight(id) {
+		if(!id.endsWith(max)) {
+			var arr = id.split("");
+			var i = parseInt(arr[0]);
+			var j = parseInt(arr[1]);
+			for(var k=(j+1);k<=max;k++) {
+				var nId = i+""+k;
+				if(document.getElementById(nId).innerHTML != "") {
+					var val = parseInt(document.getElementById(i+""+(k-1)).innerHTML);
+					var nVal = parseInt(document.getElementById(nId).innerHTML);
+					if(val == nVal) {
+						if(excludeIds.indexOf(nId) == -1){
+							excludeIds.push(nId);
+							document.getElementById(nId).innerHTML = (val+nVal);
+							document.getElementById(nId).style.backgroundImage = getImg((val+nVal));
+							document.getElementById(nId).style.backgroundSize = "100% 100%";
+							document.getElementById(i+""+(k-1)).innerHTML = "";
+							document.getElementById(i+""+(k-1)).style.backgroundImage = "url(imagenes/white.png)";
+							document.getElementById(i+""+(k-1)).style.backgroundSize = "100% 100%";
+							isMoved = true;
+							score += (val+nVal);
+						}
+						break;
+					}
+				}
+				else {
+					document.getElementById(nId).innerHTML = document.getElementById(i+""+(k-1)).innerHTML;
+					document.getElementById(nId).style.backgroundImage = document.getElementById(i+""+(k-1)).style.backgroundImage;
+					document.getElementById(nId).style.backgroundSize = "100% 100%";
+					document.getElementById(i+""+(k-1)).innerHTML = "";
+					document.getElementById(i+""+(k-1)).style.backgroundImage = "url(imagenes/white.png)";
+					document.getElementById(i+""+(k-1)).style.backgroundSize = "100% 100%";
+					isMoved = true;
+				}
+			}
+		}
+		return false;
+	}
+	function update() {		
+		//Add new value
+		var ids = [];
+		for(var i=min;i<=max;i++) {
+			for(var j=min;j<=max;j++) {
+				var id = i+""+j;
+				if(document.getElementById(id).innerHTML == "") {
+					ids.push(id);
+				}
+			}
+		}
+		var id = ids[Math.floor(Math.random()*ids.length)];
+		document.getElementById(id).innerHTML = "2";
+		document.getElementById(id).style.backgroundImage = getImg(2);
+		document.getElementById(id).style.backgroundSize = "100% 100%"
+
+		//Check if no move space available
+		var allFilled = true;
+		for(var i=min;i<=max;i++) {
+			for(var j=min;j<=max;j++) {
+				var id = i+""+j;
+				if(document.getElementById(id).innerHTML == "") {
+					allFilled = false;
+					break;
+				}
+			}
+		}		
+		//Update score
+		document.getElementById("score").innerHTML = score;
+		if(allFilled) {
+			checkGameOver();
+		}
+	}
+
+	function checkGameOver() {
+		var isOver = true;
+		for(var j=min;j<=max;j++) {
+			for(var i=min;i<=(max-1);i++) {
+				//alert(i+" "+j);
+				var val = parseInt(document.getElementById(i+""+j).innerHTML);
+				var nVal = parseInt(document.getElementById((i+1)+""+j).innerHTML);
+				if(val == nVal) {
+					isOver = false;
+					break;
+				}
+			}
+		}		
+		if(isOver == true) {
+			for(var i=min;i<=max;i++) {
+				for(var j=min;j<=(max-1);j++) {
+					//alert(i+" "+j);
+					var val = parseInt(document.getElementById(i+""+j).innerHTML);
+					var nVal = parseInt(document.getElementById(i+""+(j+1)).innerHTML);
+					if(val == nVal) {
+						isOver = false;
+						break;
+					}
+				}
+			}
+		}
+		if(isOver) {
+			alert("no pudiste sobornar al Mikel a tiempo y te suspendio el curso entero," +"\n"+ "pa' septiembre.");
+		}
+		return false;
+	}
+	function getImg(val)
+	{
+		//sets background image of the objects
+		var color = "url(imagenes/white.png)";
+		switch(val) {
+			case 2:		color = "url(imagenes/img2.jpg)"; break;
+			case 4:		color = "url(imagenes/img3.jpg)"; break;
+			case 8:		color = "url(imagenes/img4.jfif)"; break;
+			case 16:	color = "url(imagenes/img5.png)"; break;
+			case 32:	color = "url(imagenes/img6.jpg)"; break;
+			case 64:	color = "url(imagenes/img7.jpg)"; break;
+			case 128:	color = "url(imagenes/img8.png)"; break;
+			case 256:	color = "url(imagenes/img9.png)"; break;
+			case 512:	color = "url(imagenes/img10.jpg)"; break;
+			case 1024:	color = "url(imagenes/img11.png)"; break;
+			case 2048:	color = "url(imagenes/img12.jfif)"; break;
+			case 4096:  color = "url(imagenes/img13.png)"; break;
+			default:	color = "url(imagenes/white.jfif)";
+		}
+		return color;
+	}
+	if ( typeof String.prototype.startsWith != 'function' ) {
+	  String.prototype.startsWith = function( str ) {
+		return this.substring( 0, str.length ) === str;
+	  }
+	};
+	if ( typeof String.prototype.endsWith != 'function' ) {
+	  String.prototype.endsWith = function( str ) {
+		return this.substring( this.length - str.length, this.length ) === str;
+	  }
+	};
+	document.onkeydown = function(e) {
+		e.preventDefault();//to prevent scroll of screen
+		switch (e.keyCode) {
+			case 37:
+				left();
+				break;
+			case 38:
+				up();
+				break;
+			case 39:
+				right();
+				break;
+			case 40:
+				down();
+				break;
+		}
+	};
+	//calling load method
+	load();
+  //-->
+  </script>
+ </body>
+</html>
